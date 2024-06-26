@@ -12,7 +12,9 @@
 
 import random
 import typing
-from objects import Board
+from board import Board
+from astar import a_star_search, heuristic
+from possible_safe_moves import simple_safe_moves, head_collision_safe_moves
 
 
 # info is called when you create your Battlesnake on play.battlesnake.com
@@ -23,7 +25,7 @@ def info() -> typing.Dict:
 
     return {
         "apiversion": "1",
-        "author": "KI-1 Projekt SS2024",  # TODO: Your Battlesnake Username
+        "author": "MySnake",  # TODO: Your Battlesnake Username
         "color": "#FF0000",  # TODO: Choose color
         "head": "caffeine",  # TODO: Choose head
         "tail": "coffee",  # TODO: Choose tail
@@ -40,96 +42,6 @@ def end(game_state: typing.Dict):
     print("GAME OVER\n")
 
 
-# TODO: Step 1 - Prevent your Battlesnake from moving out of bounds
-def border_unsafe_moves(game_state: typing.Dict, is_move_safe: typing.Dict) -> typing.Dict:
-
-
-    #The battlefield size
-    board_width = game_state['board']['width']
-    board_height = game_state['board']['height']
-    #Head Position
-    head_position = game_state['you']['head']
-
-    print(str(head_position))
-
-    print('up: ' + str(head_position['y'] + 1))
-    print(not(head_position['y'] + 1 >= board_height))
-
-    print('down: ' + str(head_position['y'] - 1))
-    print(not(head_position['y'] - 1 < 0))
-
-    print('left: ' + str(head_position['x'] - 1))
-    print(not(head_position['x'] - 1 < 0))
-    
-    print('right: ' + str(head_position['x'] + 1))
-    print(not(head_position['x'] + 1 >= board_width))
-    
-    
-
-    if head_position['y'] + 1 >= board_height:
-        print('switching up to False')
-        is_move_safe['up'] = False
-    if head_position['y'] - 1 <= 0:
-        print('switching down to False')
-        is_move_safe['down'] = False
-    if head_position['x'] - 1 <= 0:
-        print('switching left to False')
-        is_move_safe['left'] = False
-    if head_position['x'] + 1 >= board_width:
-        print('switching right to False')
-        is_move_safe['right'] = False    
-    
-        
-    #print("border_unsafe_moves: " + str(is_move_safe))
-    return is_move_safe
-
-
-# TODO: Step 2 - Prevent your Battlesnake from colliding with itself
-# my_body = game_state['you']['body']
-def body_unsafe_moves(game_state: typing.Dict, is_move_safe: typing.Dict) -> typing.Dict:
-
-    #Head Position
-    head_position = game_state['you']['head']
-    
-    #Body Position list
-    my_body = game_state['you']['body']
-    my_body_x_values = [item['x'] for item in my_body]
-    my_body_y_values = [item['y'] for item in my_body]
-    
-
-    for move, isSafe in is_move_safe.items():
-        if isSafe == False:
-            continue
-        
-        if move == 'up':
-            for body_part_dict in my_body:
-                if head_position['y'] + 1 == body_part_dict['y'] and head_position['x'] == body_part_dict['x']:
-                    is_move_safe['up'] = False
-                    break
-        elif move == 'down':
-            for body_part_dict in my_body:
-                if head_position['y'] - 1 == body_part_dict['y'] and head_position['x'] == body_part_dict['x']:
-                    is_move_safe['down'] = False
-                    break
-        elif move == 'left':
-            for body_part_dict in my_body:
-                if head_position['x'] - 1 == body_part_dict['x'] and head_position['y'] == body_part_dict['y']:
-                    is_move_safe['left'] = False
-                    break
-        elif move ==  'right':
-            for body_part_dict in my_body:
-                if head_position['x'] + 1 == body_part_dict['x'] and head_position['y'] == body_part_dict['y']:
-                    is_move_safe['right'] = False
-                    break
-
-    #print("body_unsafe_moves: " + str(is_move_safe))
-    
-    return is_move_safe
-
-
-# move is called on every turn and returns your next move
-# Valid moves are "up", "down", "left", or "right"
-# See https://docs.battlesnake.com/api/example-move for available data
 def move(game_state: typing.Dict) -> typing.Dict:
     ''' Testdocstring ''' 
 
@@ -141,70 +53,66 @@ def move(game_state: typing.Dict) -> typing.Dict:
     }    
 
     board = Board(game_state)
-    directions = board.directions
-
     
     
-    
+    #If there is no food, check for emtpy fields, pick one random empty field
+    if len(board.food) == 0:
+        is_move_safe = simple_safe_moves(board, is_move_safe, game_state)
+        # Now Check if the safe moves by simple_safe_move are head collision safe
+        is_move_safe = head_collision_safe_moves(board, is_move_safe, game_state)
+      
 
-    
+    else: 
+        # If there is food, use A star algorihm
+        # If A star found no possible path, use simple_safe_moves
+        food = game_state['board']['food']
+        my_head = game_state['you']['head']
+        closest_food = min(food, key=lambda f: heuristic((my_head["x"], my_head["y"]), (f["x"], f["y"])))
+        print(f'closest_food: {closest_food}')
+        next_move_astar = a_star_search((closest_food["x"], closest_food["y"]), game_state, board)
 
-    # We've included code to prevent your Battlesnake from moving backwards
-    my_head = game_state["you"]["body"][0]  # Coordinates of your head
-    my_neck = game_state["you"]["body"][1]  # Coordinates of your "neck"
-
-    if my_neck["x"] < my_head["x"]:  # Neck is left of head, don't move left
-        is_move_safe["left"] = False
-
-    if my_neck["x"] > my_head["x"]:  # Neck is right of head, don't move right
-        is_move_safe["right"] = False
-
-    if my_neck["y"] < my_head["y"]:  # Neck is below head, don't move down
-        is_move_safe["down"] = False
-
-    if my_neck["y"] > my_head["y"]:  # Neck is above head, don't move up
-        is_move_safe["up"] = False
-
-
-
-    # TODO: Step 3 - Prevent your Battlesnake from colliding with other Battlesnakes
-    # opponents = game_state['board']['snakes']
-
-    # Are there any safe moves left?
-    safe_moves = []
-
-    #
-    is_move_safe = border_unsafe_moves(game_state, is_move_safe)
-    is_move_safe = body_unsafe_moves(game_state, is_move_safe)
-
-
-    
-    for k,v in directions.items():
-        q = (v == 'f_' or v == '__')
-        print(f'{v} is f_ or __ {q}')
-        if v == 'f_' or v == '__':
-            is_move_safe[k] = True
+        if next_move_astar == "no_move":
+            is_move_safe = simple_safe_moves(board, is_move_safe, game_state)
         else:
-            is_move_safe[k] = False
+            is_move_safe = {direction:False for (direction,_) in is_move_safe.items()}
+            
+            print(f'\n next_move_astar: \n {next_move_astar}')
+            is_move_safe[next_move_astar] = True
+            
+            print(f'\n astar_is_move_safe: \n {is_move_safe}')
+              
+        # Now Check if the A star move are head collision safe
+        is_move_safe = head_collision_safe_moves(board, is_move_safe, game_state)
+        print(f'\n astar_head_collsion: \n {is_move_safe}')
 
-    print(f'firections: {directions}')
-    print(f'is_move_safe: {is_move_safe}')
+        # If the move from A star is not head collision safe, do a simple_safe_moves check
+        if all(value is False for value in is_move_safe.values()):
+            is_move_safe = simple_safe_moves(board, is_move_safe, game_state)
+            # Now Check if the safe moves by simple_safe_move are head collision safe
+            is_move_safe = head_collision_safe_moves(board, is_move_safe, game_state)
+
+
+    #If head_collision leaves no safe move, then use simple safe move without going to food
+    if all(value is False for value in is_move_safe.values()):
+        is_move_safe = simple_safe_moves(board, is_move_safe, game_state)
+        direction_values = board.directions_values
+        for v,k in direction_values.items():
+            if v == 'f_':
+                is_move_safe[k] = False
 
     
+    safe_moves = []
     for move, isSafe in is_move_safe.items():
-        if isSafe:
-            safe_moves.append(move)
+      if isSafe:
+          safe_moves.append(move)
 
     if len(safe_moves) == 0:
         print(f"MOVE {game_state['turn']}: No safe moves detected! Moving down")
-        return {"move": "down"}
-
-    # Choose a random move from the safe ones
-    next_move = random.choice(safe_moves)
-
-    # TODO: Step 4 - Move towards food instead of random, to regain health and survive longer
-    # food = game_state['board']['food']
-
+        next_move = {"move": "down"}
+    else: 
+        # Choose a random move from the safe ones
+        next_move = random.choice(safe_moves)
+    
     print(f"MOVE {game_state['turn']}: {next_move}")
     return {"move": next_move}
 
