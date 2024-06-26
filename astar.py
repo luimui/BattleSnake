@@ -3,11 +3,22 @@ import numpy as np
 
 
 def heuristic(a, b):
+    '''
+    Erstellt die Distanz zwischen zwei Koordinaten, die als Heuristik im A*-Algorithmus verwendet wird.
+
+    Parameter:
+    ----------
+    a, b: (x,y)-Tupel für Koordinaten auf dem Feld.
+
+    Return:
+    ----------
+    int
+    '''
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 
 def a_star_search(goal, game_state, board):
-    
+
     start = board.head
     start = (start['x'], start['y'])
 
@@ -18,18 +29,13 @@ def a_star_search(goal, game_state, board):
         possible_fields = []
 
         directions_values = board.directions_values_for_node(nodeX, nodeY)
-        directions_coordinates = board.directions_coordinates_for_node(nodeX, nodeY)
-
-        #print(np.rot90(board.board))
-        #print(directions_values)
+        directions_coordinates = board.directions_coordinates_for_node(
+            nodeX, nodeY)
 
         for k, v in directions_values.items():
-            #print(directions_values[k])
             if v == 'f_' or v == '__':
                 possible_field = directions_coordinates[k]
                 possible_fields.append(possible_field)
-        #print(f'\n possible_fields: {possible_fields}')
-
         return possible_fields
 
     frontier = []
@@ -79,10 +85,10 @@ def a_star_search(goal, game_state, board):
         elif next_step[1] > board.head["y"]:
             next_move = "up"
 
-
     print(np.rot90(board.board))
-    directions_values = board.directions_values_for_node(board.head['x'], board.head['y'])
+    directions_values = board.directions_values_for_node(
+        board.head['x'], board.head['y'])
     print(f'head_directions: \n {directions_values}')
     print(f'path: \n {path}')
-    
+
     return next_move

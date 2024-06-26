@@ -1,7 +1,19 @@
 import numpy as np
 
-def simple_safe_moves(board, is_move_safe, game_state):
-    ''' This method checks if there is a save move left, meaning if the directions possible show food or an empty field, but no snake heads, bodys (including our own) or walls. It returns an updated is_move_safe dictionary'''
+def simple_safe_moves(board, is_move_safe):
+    '''
+    Diese Methode prüft, ob es noch einen sicheren Zug gibt, d.h. ob die möglichen Richtungen Nahrung oder ein leeres Feld zeigen, aber keine Schlangenköpfe, Körper (einschließlich unserer eigenen) oder Wände. Sie gibt ein aktualisiertes is_move_safe-Wörterbuch zurück, und erwartet als Parameter ein Board-Objekt und ein is_move_safe dict.
+
+    Parameters
+    ----------
+    board: Board object
+    is_move_safe: dict of possible directions
+
+    
+    Return:
+    ----------
+    {'up': False, 'down': True, 'left': False, 'right': False}
+    '''
     directions_values = board.directions_values
     for k, v in directions_values.items():
         if v == '__' or v == 'f_':
@@ -12,7 +24,20 @@ def simple_safe_moves(board, is_move_safe, game_state):
     return is_move_safe
 
 
-def head_collision_safe_moves(board, is_move_safe, game_state):
+def head_collision_safe_moves(board, is_move_safe):
+    '''Diese Methode prüft, ob sich für die möglichen Richtungen des Kopfes im nächsten Zug auch der Kopf einer anderen Schlange befinden kann. Sollte das der Fall, wird das Feld als False im is_move_safe dict markiert. Sollte unsere Schlange allerdings länger als die andere Schlange sein, bleibt Feld im is_move_safe dict True.
+    Sie gibt ein aktualisiertes is_move_safe-Wörterbuch zurück, und erwartet als Parameter ein Board-Objekt und ein is_move_safe dict.
+    
+    Parameter
+    ----------
+    board: Board object
+    is_move_safe: dict of possible directions
+
+
+    Return:
+    ----------
+    {'up': False, 'down': True, 'left': False, 'right': False}
+    '''
 
     #Check only possible safe moves
     for k,v in is_move_safe.items():
@@ -31,9 +56,9 @@ def head_collision_safe_moves(board, is_move_safe, game_state):
                 body_name = ('b' + snake_number)
                 snake_length = np.sum(board.board == body_name) + 2
                 print(f'\n snake_length: {snake_length}')
-                print(f'\n MySnake length: {(game_state["you"]["length"])}')
+                print(f'\n MySnake length: {board.length}')
                 #If it is not a shorter snake, move is not safe
-                if snake_length >= game_state['you']['length']:
+                if snake_length >= board.length:
                     is_move_safe[k] = False
                     print(f'is_move_safe[k]: {is_move_safe[k]}')
                     

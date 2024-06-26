@@ -17,6 +17,9 @@ from astar import a_star_search, heuristic
 from possible_safe_moves import simple_safe_moves, head_collision_safe_moves
 
 
+''''''
+
+
 # info is called when you create your Battlesnake on play.battlesnake.com
 # and controls your Battlesnake's appearance
 # TIP: If you open your Battlesnake URL in a browser you should see this data
@@ -57,9 +60,9 @@ def move(game_state: typing.Dict) -> typing.Dict:
     
     #If there is no food, check for emtpy fields, pick one random empty field
     if len(board.food) == 0:
-        is_move_safe = simple_safe_moves(board, is_move_safe, game_state)
+        is_move_safe = simple_safe_moves(board, is_move_safe)
         # Now Check if the safe moves by simple_safe_move are head collision safe
-        is_move_safe = head_collision_safe_moves(board, is_move_safe, game_state)
+        is_move_safe = head_collision_safe_moves(board, is_move_safe)
       
 
     else: 
@@ -72,7 +75,7 @@ def move(game_state: typing.Dict) -> typing.Dict:
         next_move_astar = a_star_search((closest_food["x"], closest_food["y"]), game_state, board)
 
         if next_move_astar == "no_move":
-            is_move_safe = simple_safe_moves(board, is_move_safe, game_state)
+            is_move_safe = simple_safe_moves(board, is_move_safe)
         else:
             is_move_safe = {direction:False for (direction,_) in is_move_safe.items()}
             
@@ -82,19 +85,19 @@ def move(game_state: typing.Dict) -> typing.Dict:
             print(f'\n astar_is_move_safe: \n {is_move_safe}')
               
         # Now Check if the A star move are head collision safe
-        is_move_safe = head_collision_safe_moves(board, is_move_safe, game_state)
+        is_move_safe = head_collision_safe_moves(board, is_move_safe)
         print(f'\n astar_head_collsion: \n {is_move_safe}')
 
         # If the move from A star is not head collision safe, do a simple_safe_moves check
         if all(value is False for value in is_move_safe.values()):
-            is_move_safe = simple_safe_moves(board, is_move_safe, game_state)
+            is_move_safe = simple_safe_moves(board, is_move_safe)
             # Now Check if the safe moves by simple_safe_move are head collision safe
-            is_move_safe = head_collision_safe_moves(board, is_move_safe, game_state)
+            is_move_safe = head_collision_safe_moves(board, is_move_safe)
 
 
     #If head_collision leaves no safe move, then use simple safe move without going to food
     if all(value is False for value in is_move_safe.values()):
-        is_move_safe = simple_safe_moves(board, is_move_safe, game_state)
+        is_move_safe = simple_safe_moves(board, is_move_safe)
         direction_values = board.directions_values
         for v,k in direction_values.items():
             if v == 'f_':
