@@ -49,7 +49,7 @@ def head_collision_safe_moves(board, is_move_safe):
             print(f'\n directions_values_head_collision: \n {directions_values_for_node}')
             
             #Check if there is a head 
-            if vales_contain_substring(directions_values_for_node.values(), 'h'):
+            if values_contain_substring(directions_values_for_node.values(), 'h'):
                 #Get Snake number 'h1', 'h2', and check length
                 snake_head = search(directions_values_for_node, 'h')
                 snake_number = snake_head[-1]
@@ -68,6 +68,20 @@ def head_collision_safe_moves(board, is_move_safe):
 
 
 def search(dictionary, searchFor):
+    '''
+    Diese Funktion gibt den ersten Value eines Keys aus, wenn der String searchFor in diesem Value vorkommt. Falls der String nicht in den Values enthalten ist, wird None zurückgegeben.
+
+    Parameter
+    ----------
+    dictionary: dict
+    searchFor: String
+
+
+    Return:
+    ----------
+    dictionary[k] : Value des Key K | None
+    
+    '''
     for k in dictionary:
         if searchFor in dictionary[k]:
           dictionary[k]
@@ -75,8 +89,22 @@ def search(dictionary, searchFor):
     return None
 
 
-def vales_contain_substring(strings, x):
+def values_contain_substring(strings, substring):
+    '''
+    Diese Funktion prüft ob ein String Substring eines Strings in einer Lsite von Strings ist.
+
+    Parameter
+    ----------
+    strings: [s1,...,sn] Liste von Strings
+    searchFor: String
+
+
+    Return:
+    ----------
+    Boolean
+
+    '''
     for s in strings:
-        if x in s:
+        if substring in s:
             return True
     return False

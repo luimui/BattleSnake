@@ -47,7 +47,24 @@ Die Koordinaten sind die (x,y) Werte des Feldes, nicht die (row,col) Werte des N
     self.food             = game_state["board"]['food']
     self.head             = game_state["you"]["head"]
     self.length           = game_state['you']['length']
+    self.health           = game_state['you']['health']
+    
 
+    length_others = []
+    for snake in game_state['board']['snakes']:
+      if snake['id'] != game_state['you']['id']:
+        length_others.append(snake['length'])
+      if len(game_state['board']['snakes']) == 1:
+        length_others.append(10000)
+    self.max_length_others = max(length_others)
+
+    heads = []
+    for snake in game_state["board"]['snakes']:
+      if snake['id'] != game_state['you']['id']:
+        head = snake['head']
+        heads.append(head)
+    self.heads = heads
+    
     # Create empty board, padded by walls
     self.board = np.empty([
       self.board_game_state['height'] + 2, self.board_game_state['width'] + 2
@@ -92,26 +109,24 @@ Die Koordinaten sind die (x,y) Werte des Feldes, nicht die (row,col) Werte des N
     self.board[self.board == ''] = '__'
 
    
-    self.directions_values = 
-    '''Gibt die Werte der Nachbarn des eigenen Kopfes zurück.
-    {'up': 'f_', 'down': '__', 'left': 'b1', 'right': '__'}'''
-    {
+    self.directions_values = {
       "up": self.board[(self.head['x'] + 1), (self.head['y'] + 1 + 1)],
       "down": self.board[(self.head['x'] + 1), (self.head['y'] + 1 - 1)],
       "left": self.board[(self.head['x'] + 1 - 1), (self.head['y'] + 1)],
       "right": self.board[(self.head['x'] + 1 + 1), (self.head['y'] + 1)]
     }
+    '''Gibt die Werte der Nachbarn des eigenen Kopfes zurück.
+    {'up': 'f_', 'down': '__', 'left': 'b1', 'right': '__'}'''
 
     
-    self.directions_coordinates = 
-    '''Gibt die Koordinaten der Nachbarn des eigenen Kopfes zurück.
-    {"up": (2,2), "down": (2,0), "left": (1,1), "right": (3,1)}'''
-    {
+    self.directions_coordinates =  {
       "up": ((self.head['x']), (self.head['y'] + 1)),
       "down": ((self.head['x']), (self.head['y'] - 1)),
       "left": ((self.head['x'] - 1), (self.head['y'])),
       "right": ((self.head['x'] + 1), (self.head['y']))
     }
+    '''Gibt die Koordinaten der Nachbarn des eigenen Kopfes zurück.
+    {"up": (2,2), "down": (2,0), "left": (1,1), "right": (3,1)}'''
 
   def directions_values_for_node(self, nodeX, nodeY):
     '''Gibt die Werte der Nachbarn eines Feldes zurück, erwartet Koordinaten als Parameter. 
