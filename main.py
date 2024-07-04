@@ -48,10 +48,15 @@ def move(game_state: typing.Dict) -> typing.Dict:
     Diese Methode ist die Hauptmethode, die aufgerufen wird, um einen Move Request vom BattleSnake-Server mit einer Bewegungsrichtung für den nächsten Zug zurückzugeben.
 
     Hierarchisch werden einzelne Situationen abgeprüft und nicht sichere Züge markiert. Kern ist dabei der A*-Alogrithmus zur Bestimmung des Pfads zum dichtesten Ziel.
-    Existiert kein Futter:                                      Zufälliger sicherer Zug
-    Exisitiert Futter:                                          A* zum nächsten Futter
-        Head-Kollision möglich und Gegner kleiner:              A* zum nächsten Futter  
-    Findet A* keinen Pfad oder Head-Kollision nicht sicher:     Zufälliger sicherer Zug
+    Jagmodus: (wenn unsere Schlange 2 Elemente größer ist als alle anderen)     A* zum nächsten Kopf
+        Findet A* keinen Pfad oder nicht sicher:                                Zufälliger sicherer Zug
+        Wird gar kein sicher Zug gefunden:                                      {"move": "up"} 
+    Futtermodus: (sonst)
+        Existiert kein Futter:                                                  Zufälliger sicherer Zug
+        Exisitiert Futter:                                                      A* zum nächsten Futter
+            Head-Kollision möglich und Gegner kleiner:                          A* zum nächsten Futter  
+        Findet A* keinen Pfad oder Head-Kollision nicht sicher:                 Zufälliger sicherer Zug
+    
     Wird gar kein sicher Zug gefunden:                          {"move": "up"}  
 
     Ziele können dabei Futter oder die Köpfe der anderen Schlangen sein, wenn alle anderen Schlangen wenigstens 2 Stück kleiner sind als unsere Schlange.
