@@ -9,18 +9,12 @@
 #
 # To get you started we've included code to prevent your Battlesnake from moving backwards.
 # For more info see docs.battlesnake.com
-
 '''
 Ludwig Krause: 209200612 
 Willem Schlüter: 220201009 
 Sadegh Hajimirzamohammadi: 221202356
 Lukas Stahl: 221202203
 '''
-
-
-
-
-
 
 import random
 import typing
@@ -92,26 +86,33 @@ def move(game_state: typing.Dict) -> typing.Dict:
     food = game_state['board']['food']
     my_head = game_state['you']['head']
 
-    if (board.max_length_others + 2 <= board.length) and board.health > 20:
+    if (board.max_length_others + 2
+            <= board.length) and board.health > 20 and board.heads != []:
         print(f'HUNTING MODE!')
         print(board.heads)
-        goal = min(board.heads, key=lambda f: heuristic((my_head["x"], my_head["y"]), (f["x"], f["y"])))
+        goal = min(board.heads,
+                   key=lambda f: heuristic((my_head["x"], my_head["y"]),
+                                           (f["x"], f["y"])))
         print(f'closest Head: {goal}')
         mode = 'hunt'
         next_move_astar = a_star_search((goal["x"], goal["y"]), board, mode)
     elif len(board.food) != 0:
         print(f'FOOD MODE!')
         print(food)
-        goal = min(food, key=lambda f: heuristic((my_head["x"], my_head["y"]), (f["x"], f["y"])))
+        goal = min(food,
+                   key=lambda f: heuristic((my_head["x"], my_head["y"]),
+                                           (f["x"], f["y"])))
         print(f'closes food: {goal}')
         mode = 'food'
-        
-        sorted_food_distance = sorted(food, key=lambda f: heuristic((my_head["x"], my_head["y"]), (f["x"], f["y"])))
+
+        sorted_food_distance = sorted(food,
+                                      key=lambda f: heuristic(
+                                          (my_head["x"], my_head["y"]),
+                                          (f["x"], f["y"])))
         print(f'sorted_food_distance:\n {sorted_food_distance}')
-        heads_sorted_food_distance = sorted(food, key=lambda f: min(heuristic((head["x"], head["y"]), (f["x"], f["y"])) for head in board.heads))
-        print(f'heads_sorted_food_distance:\n {heads_sorted_food_distance}')
+
         next_move_astar = a_star_search((goal["x"], goal["y"]), board, mode)
-    
+
     if len(board.food) == 0:
         next_move_astar = "no_move"
 
