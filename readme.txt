@@ -15,3 +15,5 @@ Praxisteil: Implementierung des Bots:
 	- board.py
 	- astar.py
 	- possible_safe_moves.py
+
+URL:	
