@@ -1,3 +1,10 @@
+'''
+Ludwig Krause: 209200612 
+Willem Schlüter: 220201009 
+Sadegh Hajimirzamohammadi: 221202356
+Lukas Stahl: 221202203
+'''
+
 import heapq
 import numpy as np
 
@@ -37,10 +44,10 @@ def a_star_search(goal, board, mode):
 
     frontier = []
     heapq.heappush(frontier, (0, start))
-    came_from = {}
-    cost_so_far = {}
-    came_from[start] = None
-    cost_so_far[start] = 0
+    field_before = {}
+    cost_till_now = {}
+    field_before[start] = None
+    cost_till_now[start] = 0
 
     while not len(frontier) == 0:
         current_field = heapq.heappop(frontier)[1]
@@ -48,25 +55,23 @@ def a_star_search(goal, board, mode):
         if current_field == goal:
             break
 
-        for next_possible_field in get_possible_fields(current_field, board,
-                                                       mode):
-            new_cost = cost_so_far[current_field] + 1
-            if next_possible_field not in cost_so_far or new_cost < cost_so_far[
-                    next_possible_field]:
-                cost_so_far[next_possible_field] = new_cost
-                priority = new_cost + heuristic(goal, next_possible_field)
-                heapq.heappush(frontier, (priority, next_possible_field))
-                came_from[next_possible_field] = current_field
+        for next_possible_field in get_possible_fields(current_field, board, mode):
+            new_cost = cost_till_now[current_field] + 1
+            if next_possible_field not in cost_till_now or new_cost < cost_till_now[next_possible_field]:
+                cost_till_now[next_possible_field] = new_cost
+                prior = new_cost + heuristic(goal, next_possible_field)
+                heapq.heappush(frontier, (prior, next_possible_field))
+                field_before[next_possible_field] = current_field
 
     # Reconstruct path
-    if goal not in came_from:
+    if goal not in field_before:
         return "no_move"
 
     current_field = goal
     path = []
     while current_field != start:
         path.append(current_field)
-        current_field = came_from[current_field]
+        current_field = field_before[current_field]
     path.append(start)
     path.reverse()
 

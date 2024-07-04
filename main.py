@@ -10,12 +10,23 @@
 # To get you started we've included code to prevent your Battlesnake from moving backwards.
 # For more info see docs.battlesnake.com
 
+'''
+Ludwig Krause: 209200612 
+Willem Schlüter: 220201009 
+Sadegh Hajimirzamohammadi: 221202356
+Lukas Stahl: 221202203
+'''
+
+
+
+
+
+
 import random
 import typing
 from board import Board
 from astar import a_star_search, heuristic
 from possible_safe_moves import simple_safe_moves, head_collision_safe_moves
-''''''
 
 
 # info is called when you create your Battlesnake on play.battlesnake.com

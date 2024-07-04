@@ -1,3 +1,10 @@
+'''
+Ludwig Krause: 209200612 
+Willem Schlüter: 220201009 
+Sadegh Hajimirzamohammadi: 221202356
+Lukas Stahl: 221202203
+'''
+
 import numpy as np
 import typing
 
