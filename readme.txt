@@ -16,4 +16,4 @@ Praxisteil: Implementierung des Bots:
 	- astar.py
 	- possible_safe_moves.py
 
-URL:	
+URL: https://341933b5-834a-4758-8dd5-a9dfe01cd239-00-2l3b4wwt77yph.kirk.replit.dev/
